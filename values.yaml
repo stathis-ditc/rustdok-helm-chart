@@ -1,0 +1,193 @@
+# -- Whether to create the namespace where the chart is installed.
+namespace: ""
+
+# -- Server component configuration for the RustDok backend
+server:
+  # -- Name of the server deployment
+  name: rustdok-server
+  # -- Number of server replicas to deploy
+  replicaCount: 1
+  
+  image:
+    # -- Docker image repository for the server
+    repository: ghcr.io/devs-in-the-cloud/rustdok-server
+    # -- Docker image tag for the server
+    tag: latest
+    # -- Image pull policy for the server container
+    pullPolicy: IfNotPresent
+  
+  service:
+    # -- Kubernetes service type for the server
+    type: ClusterIP
+    # -- Port the service will be exposed on
+    port: 8080
+    # -- Port the service will target in the pod
+    targetPort: 8080
+  
+  # -- Liveness probe configuration to determine if the container is running
+  livenessProbe:
+    # -- Number of seconds after the container has started before the probe is initiated
+    initialDelaySeconds: 30
+    # -- How often the probe is performed
+    periodSeconds: 10
+    # -- Number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- Minimum consecutive successes for the probe to be considered successful
+    successThreshold: 1
+    # -- Number of times the probe will tolerate failure before giving up
+    failureThreshold: 3
+  
+  # -- Readiness probe configuration to determine if the container is ready to serve traffic
+  readinessProbe:
+    # -- Number of seconds after the container has started before the probe is initiated
+    initialDelaySeconds: 10
+    # -- How often the probe is performed
+    periodSeconds: 10
+    # -- Number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- Minimum consecutive successes for the probe to be considered successful
+    successThreshold: 1
+    # -- Number of times the probe will tolerate failure before giving up
+    failureThreshold: 3
+  
+  # -- Resource requests and limits for the server container
+  resources:
+    limits:
+      # -- CPU resource limit
+      cpu: 500m
+      # -- Memory resource limit
+      memory: 512Mi
+    requests:
+      # -- CPU resource request
+      cpu: 100m
+      # -- Memory resource request
+      memory: 128Mi
+  
+  storage:
+    # --  Generic S3 storage configuration. Recommended to use only for development purposes or
+    # -- if an object storage is not yet supported by the chart.
+    # -- If an object storage below is enabled, this config will be overwritten if the same config 
+    # -- is set in the object storage below.
+    s3:
+      # -- S3 endpoint URL (leave empty for AWS S3)
+      endpointUrl: ""
+      # -- S3 region (required even for S3-compatible storage that doesn't use regions)
+      region: "eu-central-1" 
+      # -- S3 access key
+      accessKey: ""
+      # -- S3 secret key
+      secretKey: ""
+    # -- End of generic s3 storage configuration  
+
+    # -- Rook Ceph storage configuration
+    rookCeph:
+      # -- Whether to enable Rook Ceph storage integration
+      enabled: false
+      # -- The namespace where the CephObjectStoreUser is created
+      namespace: rook-ceph
+      s3:
+        objectStoreUser:
+          # -- The secret where Ceph keeps the credentials of the object store user.
+          # -- This is a secret created by the rook-ceph operator when creating a CephObjectStoreUser.
+          # -- The secret is created in the namespace where the CephObjectStoreUser is created.
+          secretName: ""
+          # -- If copySecret is true, the secret will be copied to the namespace where the chart is installed.
+          # -- This is useful if the secret is not in the namespace where the chart is installed.
+          # -- The secret will be copied to the namespace where the chart is installed with the same name.
+          # -- Do not enable if the secret can be replicated by other means to the namespace where the chart is installed.
+          copySecret: false
+          
+    # -- End of Rook Ceph storage configuration
+      
+  # -- Annotations to add to the server pods
+  podAnnotations: {}
+  # -- Node selector for the server pods
+  nodeSelector: {}
+  # -- Tolerations for the server pods
+  tolerations: []
+  # -- Affinity settings for the server pods
+  affinity: {}
+  
+  # -- Environment variables configuration for the server
+  env:
+    # -- Additional environment variables to add to the server container
+    extraEnvs: []
+
+# -- WebUI component configuration for the RustDok frontend
+webui:
+  # -- Whether to enable the WebUI component
+  enabled: true
+  # -- Name of the WebUI deployment
+  name: rustdok-webui
+  # -- Number of WebUI replicas to deploy
+  replicaCount: 1
+  
+  image:
+    # -- Docker image repository for the WebUI
+    repository: ghcr.io/devs-in-the-cloud/rustdok-webui
+    # -- Docker image tag for the WebUI
+    tag: latest
+    # -- Image pull policy for the WebUI container
+    pullPolicy: Always
+  
+  service:
+    # -- Kubernetes service type for the WebUI
+    type: ClusterIP
+    # -- Port the service will be exposed on
+    port: 3000
+    # -- Port the service will target in the pod
+    targetPort: 3000
+  
+  # -- Liveness probe configuration to determine if the container is running
+  livenessProbe:
+    # -- Number of seconds after the container has started before the probe is initiated
+    initialDelaySeconds: 30
+    # -- How often the probe is performed
+    periodSeconds: 10
+    # -- Number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- Minimum consecutive successes for the probe to be considered successful
+    successThreshold: 1
+    # -- Number of times the probe will tolerate failure before giving up
+    failureThreshold: 3
+  
+  # -- Readiness probe configuration to determine if the container is ready to serve traffic
+  readinessProbe:
+    # -- Number of seconds after the container has started before the probe is initiated
+    initialDelaySeconds: 10
+    # -- How often the probe is performed
+    periodSeconds: 10
+    # -- Number of seconds after which the probe times out
+    timeoutSeconds: 5
+    # -- Minimum consecutive successes for the probe to be considered successful
+    successThreshold: 1
+    # -- Number of times the probe will tolerate failure before giving up
+    failureThreshold: 3
+  
+  # -- Resource requests and limits for the WebUI container
+  resources:
+    limits:
+      # -- CPU resource limit
+      cpu: 300m
+      # -- Memory resource limit
+      memory: 256Mi
+    requests:
+      # -- CPU resource request
+      cpu: 100m
+      # -- Memory resource request
+      memory: 128Mi
+  
+  # -- Annotations to add to the WebUI pods
+  podAnnotations: {}
+  # -- Node selector for the WebUI pods
+  nodeSelector: {}
+  # -- Tolerations for the WebUI pods
+  tolerations: []
+  # -- Affinity settings for the WebUI pods
+  affinity: {}
+  
+  # -- Environment variables configuration for the WebUI
+  env:
+    # -- Additional environment variables to add to the WebUI container
+    extraEnvs: []
+

@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{- $metadata := dict "name" .Values.server.name "Chart" .Chart "Release" .Release }}
+  {{- include "rustdok.commonMetadata" $metadata | nindent 2 }}
+spec:
+  replicas: {{ .Values.server.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.server.name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.server.name }}
+        release: {{ .Release.Name }}
+      {{- with .Values.server.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.server.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.server.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Values.server.name }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.service.targetPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: {{ .Values.server.livenessProbe.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ .Values.server.livenessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.server.livenessProbe.timeoutSeconds | default 5 }}
+            successThreshold: {{ .Values.server.livenessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.server.livenessProbe.failureThreshold | default 3 }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: {{ .Values.server.readinessProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ .Values.server.readinessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.server.readinessProbe.timeoutSeconds | default 5 }}
+            successThreshold: {{ .Values.server.readinessProbe.successThreshold | default 1 }}
+            failureThreshold: {{ .Values.server.readinessProbe.failureThreshold | default 3 }}
+          env:
+            {{- include "rustdok.s3EnvVars" . | nindent 12 }}
+            {{- include "rustdok.serverEnvVars" . | nindent 12 }}
+            {{- if .Values.server.env.extraEnvs }}
+            {{- toYaml .Values.server.env.extraEnvs | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.server.resources | nindent 12 }}
