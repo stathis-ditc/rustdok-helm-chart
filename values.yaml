@@ -98,8 +98,22 @@ server:
           copySecret: false
           
     # -- End of Rook Ceph storage configuration
-      
-  # -- Annotations to add to the server pods
+
+  # -- Gateway API configuration
+  gatewayapi:
+    # -- Whether to enable Gateway API
+    enabled: false
+    # -- Parent references for the Gateway API. A gateway is required to be installed before enabling this.
+    # -- Check GatewayApi Docs on how to setup a gateway. ref: https://gateway-api.sigs.k8s.io/
+    parentRefs: []
+    # Example parentRefs:
+    # - name: tls-gateway # name of the gateway
+    #   namespace: connectivity
+    # -- Hostnames for the Gateway API
+    hostnames: []
+    # Example hostnames: 
+    # - "rustdok.ditc.lcldns"
+    # -- Annotations to add to the server pods
   podAnnotations: {}
   # -- Node selector for the server pods
   nodeSelector: {}
@@ -176,7 +190,20 @@ webui:
       cpu: 100m
       # -- Memory resource request
       memory: 128Mi
-  
+  # -- Gateway API configuration
+  gatewayapi:
+    # -- Whether to enable Gateway API
+    enabled: false
+    # -- Parent references for the Gateway API. A gateway is required to be installed before enabling this.
+    # -- Check GatewayApi Docs on how to setup a gateway. ref: https://gateway-api.sigs.k8s.io/
+    parentRefs: []
+    # Example parentRefs:
+    # - name: tls-gateway # name of the gateway
+    #   namespace: connectivity
+    # -- Hostnames for the Gateway API
+    hostnames: []
+    # Example hostnames: 
+    # - "rustdok.ditc.lcldns"
   # -- Annotations to add to the WebUI pods
   podAnnotations: {}
   # -- Node selector for the WebUI pods
