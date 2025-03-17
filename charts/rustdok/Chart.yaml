@@ -1,0 +1,11 @@
+apiVersion: v2
+name: rustdok
+description: A Helm chart for RustDok application
+type: application
+version: 0.1.0-rc3
+appVersion: "0.1.0-rc1"
+maintainers:
+  - name: Stathis Kapaniaris
+keywords:
+  - rustdok
+  - document-management

@@ -1,0 +1,6 @@
+owner: stathis-ditc
+git-repo: rustdok-helm-chart
+package-path: .cr-release-packages
+index-path: .
+pages-branch: gh-pages
+charts-repo: https://stathis-ditc.github.io/rustdok-helm-chart 
