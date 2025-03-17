@@ -17,6 +17,11 @@ Then you can install the chart with:
 helm install my-rustdok rustdok/rustdok
 ```
 
+For specific versions and pre-releases you need to specify explicity the chart version
+```bash
+helm install my-rustdok rustdok/rustdok  --version 0.1.0-rc3
+```
+
 ## Prerequisites
 
 - Kubernetes 1.19+
