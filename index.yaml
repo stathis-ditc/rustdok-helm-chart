@@ -1,3 +1,19 @@
 apiVersion: v1
-entries: {}
-generated: "2025-03-17T14:52:56Z"
+entries:
+  rustdok:
+  - apiVersion: v2
+    appVersion: 0.1.0-rc1
+    created: "2025-03-17T15:13:30.155509185Z"
+    description: A Helm chart for RustDok application
+    digest: 3c72fdd900b4d390615af3889a6bcb5ac17f1e6bf4527ec748b7637d38448238
+    keywords:
+    - rustdok
+    - document-management
+    maintainers:
+    - name: Stathis Kapaniaris
+    name: rustdok
+    type: application
+    urls:
+    - https://github.com/stathis-ditc/rustdok-helm-chart/releases/download/rustdok-0.1.0-rc3/rustdok-0.1.0-rc3.tgz
+    version: 0.1.0-rc3
+generated: "2025-03-17T15:13:30.155521528Z"
