@@ -2,18 +2,25 @@
 
 This Helm chart deploys the RustDok application on a Kubernetes cluster.
 
+## Using the Chart Repository
+
+To use this chart repository, add it to your Helm repositories:
+
+```bash
+helm repo add rustdok https://stathis-ditc.github.io/rustdok-helm-chart
+helm repo update
+```
+
+Then you can install the chart with:
+
+```bash
+helm install my-rustdok rustdok/rustdok
+```
+
 ## Prerequisites
 
 - Kubernetes 1.19+
 - Helm 3.2.0+
-
-## Installing the Chart
-
-To install the chart with the release name `my-rustdok`:
-
-```bash
-helm install my-rustdok ./k8s/rustdok
-```
 
 ## Uninstalling the Chart
 
@@ -52,6 +59,29 @@ The following table lists the configurable parameters of the RustDok chart and t
 | `server.affinity` | Affinity settings for the server pods | `{}` |
 | `server.env.extraEnvs` | Additional environment variables to add to the server container | `[]` |
 
+### Server Probes Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `server.livenessProbe.initialDelaySeconds` | Number of seconds after the container has started before the probe is initiated | `30` |
+| `server.livenessProbe.periodSeconds` | How often the probe is performed | `10` |
+| `server.livenessProbe.timeoutSeconds` | Number of seconds after which the probe times out | `5` |
+| `server.livenessProbe.successThreshold` | Minimum consecutive successes for the probe to be considered successful | `1` |
+| `server.livenessProbe.failureThreshold` | Number of times the probe will tolerate failure before giving up | `3` |
+| `server.readinessProbe.initialDelaySeconds` | Number of seconds after the container has started before the probe is initiated | `10` |
+| `server.readinessProbe.periodSeconds` | How often the probe is performed | `10` |
+| `server.readinessProbe.timeoutSeconds` | Number of seconds after which the probe times out | `5` |
+| `server.readinessProbe.successThreshold` | Minimum consecutive successes for the probe to be considered successful | `1` |
+| `server.readinessProbe.failureThreshold` | Number of times the probe will tolerate failure before giving up | `3` |
+
+### Server Gateway API Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `server.gatewayapi.enabled` | Whether to enable Gateway API | `false` |
+| `server.gatewayapi.parentRefs` | Parent references for the Gateway API | `[]` |
+| `server.gatewayapi.hostnames` | Hostnames for the Gateway API | `[]` |
+
 ### Storage Configuration
 
 | Parameter | Description | Default | Required |
@@ -85,6 +115,28 @@ The following table lists the configurable parameters of the RustDok chart and t
 | `webui.affinity` | Affinity settings for the WebUI pods | `{}` |
 | `webui.env.extraEnvs` | Additional environment variables to add to the WebUI container | `[]` |
 
+### WebUI Probes Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `webui.livenessProbe.initialDelaySeconds` | Number of seconds after the container has started before the probe is initiated | `30` |
+| `webui.livenessProbe.periodSeconds` | How often the probe is performed | `10` |
+| `webui.livenessProbe.timeoutSeconds` | Number of seconds after which the probe times out | `5` |
+| `webui.livenessProbe.successThreshold` | Minimum consecutive successes for the probe to be considered successful | `1` |
+| `webui.livenessProbe.failureThreshold` | Number of times the probe will tolerate failure before giving up | `3` |
+| `webui.readinessProbe.initialDelaySeconds` | Number of seconds after the container has started before the probe is initiated | `10` |
+| `webui.readinessProbe.periodSeconds` | How often the probe is performed | `10` |
+| `webui.readinessProbe.timeoutSeconds` | Number of seconds after which the probe times out | `5` |
+| `webui.readinessProbe.successThreshold` | Minimum consecutive successes for the probe to be considered successful | `1` |
+| `webui.readinessProbe.failureThreshold` | Number of times the probe will tolerate failure before giving up | `3` |
+
+### WebUI Gateway API Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `webui.gatewayapi.enabled` | Whether to enable Gateway API | `false` |
+| `webui.gatewayapi.parentRefs` | Parent references for the Gateway API | `[]` |
+| `webui.gatewayapi.hostnames` | Hostnames for the Gateway API | `[]` |
 
 ## Mandatory Values
 
@@ -104,13 +156,13 @@ The chart implements validation for mandatory values. Depending on your configur
 ### Deploying with WebUI disabled
 
 ```bash
-helm install my-rustdok ./k8s/rustdok --set webui.enabled=false
+helm install my-rustdok rustdok/rustdok --set webui.enabled=false
 ```
 
 ### Using Rook Ceph for storage
 
 ```bash
-helm install my-rustdok ./k8s/rustdok \
+helm install my-rustdok rustdok/rustdok \
   --set server.storage.rookCeph.enabled=true \
   --set server.storage.rookCeph.s3.objectStoreUser.secretName=ceph-objectstore-user-secret
 ```
@@ -118,20 +170,24 @@ helm install my-rustdok ./k8s/rustdok \
 ### Using generic S3 storage
 
 ```bash
-helm install my-rustdok ./k8s/rustdok \
+helm install my-rustdok rustdok/rustdok \
   --set server.storage.s3.endpointUrl=https://s3.example.com \
-  --set server.storage.s3.region=eu-central-1\
+  --set server.storage.s3.region=eu-central-1 \
   --set server.storage.s3.accessKey=myaccesskey \
   --set server.storage.s3.secretKey=mysecretkey
 ```
 
-## Documentation
+### Enabling Gateway API
 
-The chart's `values.yaml` file now includes comprehensive descriptions for all configuration parameters. These descriptions provide detailed information about:
+```bash
+helm install my-rustdok rustdok/rustdok \
+  --set server.gatewayapi.enabled=true \
+  --set server.gatewayapi.parentRefs[0].name=tls-gateway \
+  --set server.gatewayapi.parentRefs[0].namespace=connectivity \
+  --set server.gatewayapi.hostnames[0]=rustdok.example.com \
+  --set webui.gatewayapi.enabled=true \
+  --set webui.gatewayapi.parentRefs[0].name=tls-gateway \
+  --set webui.gatewayapi.parentRefs[0].namespace=connectivity \
+  --set webui.gatewayapi.hostnames[0]=rustdok-ui.example.com
+```
 
-- What each parameter does
-- Expected values or formats
-- Dependencies between parameters
-- Usage recommendations
-
-This improved documentation makes it easier to understand and configure the chart for your specific needs. 
