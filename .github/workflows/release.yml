@@ -9,6 +9,7 @@ jobs:
   release:
     permissions:
       contents: write
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,4 +33,28 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           charts_dir: charts
-          config: cr.yaml 
+          config: cr.yaml
+
+      # Add OCI registry support
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Get Chart Version
+        id: chart_version
+        run: |
+          VERSION=$(grep 'version:' charts/rustdok/Chart.yaml | awk '{print $2}' | tr -d '\r')
+          echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Package and Push Chart to OCI Registry
+        run: |
+          # Package the chart
+          helm package charts/rustdok
+          
+          # Push to OCI registry
+          helm push rustdok-${{ steps.chart_version.outputs.chart_version }}.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          
+          echo "Chart pushed to OCI registry: oci://ghcr.io/${{ github.repository_owner }}/charts/rustdok:${{ steps.chart_version.outputs.chart_version }}" 

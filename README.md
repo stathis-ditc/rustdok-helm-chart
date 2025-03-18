@@ -19,13 +19,27 @@ helm install my-rustdok rustdok/rustdok
 
 For specific versions and pre-releases you need to specify explicity the chart version
 ```bash
-helm install my-rustdok rustdok/rustdok  --version 0.1.0-rc3
+helm install my-rustdok rustdok/rustdok  --version VERSION
+```
+
+## Using the OCI Registry
+
+The chart is also available as an OCI artifact in the GitHub Container Registry. To install from the OCI registry:
+
+```bash
+# For Helm version 3.8.0 or later
+helm install my-rustdok oci://ghcr.io/OWNER/stathis-ditc/rustdok --version VERSION
+```
+
+```bash
+# Install the chart
+helm install my-rustdok oci://ghcr.io/stathis-ditc/charts/rustdok --version VERSION
 ```
 
 ## Prerequisites
 
 - Kubernetes 1.19+
-- Helm 3.2.0+
+- Helm 3.2.0+ (Helm 3.8.0+ for OCI registry support)
 
 ## Uninstalling the Chart
 
