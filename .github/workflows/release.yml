@@ -33,7 +33,7 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.DITC_CR }}"
         with:
           charts_dir: charts
           config: cr.yaml
@@ -44,7 +44,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.DITC_CR }}
           
       - name: Get Chart Version
         id: chart_version
@@ -53,7 +53,6 @@ jobs:
           echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
           
       - name: Package and Push Chart to OCI Registry
-
         run: |
           # Package the chart
           helm package charts/rustdok
