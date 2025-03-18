@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  ORG_NAME: devs-in-the-cloud
+  
 jobs:
   release:
     permissions:
@@ -50,11 +53,12 @@ jobs:
           echo "chart_version=$VERSION" >> $GITHUB_OUTPUT
           
       - name: Package and Push Chart to OCI Registry
+
         run: |
           # Package the chart
           helm package charts/rustdok
           
           # Push to OCI registry
-          helm push rustdok-${{ steps.chart_version.outputs.chart_version }}.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          helm push rustdok-${{ steps.chart_version.outputs.chart_version }}.tgz oci://ghcr.io/$ORG_NAME/charts
           
-          echo "Chart pushed to OCI registry: oci://ghcr.io/${{ github.repository_owner }}/charts/rustdok:${{ steps.chart_version.outputs.chart_version }}" 
+          echo "Chart pushed to OCI registry: oci://ghcr.io/$ORG_NAME/charts/rustdok:${{ steps.chart_version.outputs.chart_version }}" 

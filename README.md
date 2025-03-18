@@ -28,12 +28,12 @@ The chart is also available as an OCI artifact in the GitHub Container Registry.
 
 ```bash
 # For Helm version 3.8.0 or later
-helm install my-rustdok oci://ghcr.io/OWNER/stathis-ditc/rustdok --version VERSION
+helm install my-rustdok oci://ghcr.io/devs-in-the-cloud/charts/rustdok --version VERSION
 ```
 
 ```bash
 # Install the chart
-helm install my-rustdok oci://ghcr.io/stathis-ditc/charts/rustdok --version VERSION
+helm install my-rustdok oci://ghcr.io/devs-in-the-cloud/charts/rustdok --version VERSION
 ```
 
 ## Prerequisites
